@@ -1,21 +1,15 @@
-import { BrowserRouter , Routes , Route, Navigate } from "react-router-dom";
-import Navbar from "./Components/Navbar/Navbar"
-import Homepage from "./Components/Homepage/Homepage"
-import Login from "./Components/Login/Login"
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import Homepage from "./Components/Homepage/Homepage";
 
 function App() {
-
   return (
-      <BrowserRouter>
-          <Navbar/>
-          <Routes>
-              <Route path='/' element={<Navigate to={'/Homepage'}/>}/>
-              <Route path="/Homepage" element={<Homepage />} />
-              <Route path="/Login" element={<Login />} />
-            
-          </Routes>
-      </BrowserRouter>
-)
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Navigate to={"/Homepage"} />} />
+        <Route path="/Homepage" element={<Homepage />} />
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;

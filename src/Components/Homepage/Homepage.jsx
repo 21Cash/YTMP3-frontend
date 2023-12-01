@@ -1,18 +1,14 @@
 import React from "react";
 
-
-
 const Homepage = () => {
-    return (
-        <>
-        <h1>Homepage</h1>    
-        <h2>Welcome, This is a Homepage</h2>
-        </>
-    );
+  return <div style={styles.container}></div>;
 };
 
-
-
-
+const styles = {
+  container: {
+    backgroundColor: "#333333", // Dark mode background color
+    height: "100vh", // Full height of the viewport
+  },
+};
 
 export default Homepage;
