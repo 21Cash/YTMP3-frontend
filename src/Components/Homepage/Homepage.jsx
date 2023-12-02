@@ -1,7 +1,19 @@
-import React from "react";
+import React, { useEffect } from "react";
 import InputBox from "../InputBox/InputBox";
 
 const Homepage = () => {
+  useEffect(() => {
+    // Set overflow hidden for the html and body elements
+    document.documentElement.style.overflow = "hidden";
+    document.body.style.overflow = "hidden";
+
+    // Cleanup function to restore overflow on component unmount
+    return () => {
+      document.documentElement.style.overflow = "visible";
+      document.body.style.overflow = "visible";
+    };
+  }, []);
+
   return (
     <>
       {/* New Navigation Bar */}
@@ -12,6 +24,11 @@ const Homepage = () => {
           padding: "10px",
           textAlign: "center",
           boxSizing: "border-box",
+          height: "60px", // Set the height of the navigation bar
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
         }}
       >
         <h1 style={styles.navTitle}>21YTMP3</h1>
@@ -21,16 +38,16 @@ const Homepage = () => {
       <div
         style={{
           backgroundColor: "#1e1e1e",
-          height: "100vh", // Set height to 100vh for fullscreen
+          height: "calc(100vh - 60px)", // Set height to 100vh minus the navigation bar height
           overflow: "hidden", // Hide overflow to prevent scrolling
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
           alignItems: "center",
           color: "#4a90e2",
-          margin: 0,
           padding: "20px",
           boxSizing: "border-box",
+          marginTop: "60px", // Add margin to prevent content from being covered by the fixed navigation bar
         }}
       >
         <h1 style={styles.title}> Download MP3</h1> {/* Updated title header */}

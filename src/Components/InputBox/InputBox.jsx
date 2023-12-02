@@ -3,6 +3,7 @@ import { backendUrl } from "../../constants";
 
 const InputBox = () => {
   const [inputFieldData, setInputFieldData] = useState("");
+
   const handleDownloadClick = () => {
     const apiUrl = `${backendUrl}/convert?url=${inputFieldData}`;
 
@@ -16,6 +17,12 @@ const InputBox = () => {
 
     document.body.removeChild(downloadLink);
   };
+
+  const handleContainerClick = () => {
+    // Clear the input field when the container is clicked
+    setInputFieldData("");
+  };
+
   const styles = {
     container: {
       display: "flex",
@@ -54,7 +61,7 @@ const InputBox = () => {
   };
 
   return (
-    <div style={styles.container}>
+    <div style={styles.container} onClick={handleContainerClick}>
       <label style={styles.label}>
         Link:
         <input
