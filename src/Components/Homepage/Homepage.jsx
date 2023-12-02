@@ -1,11 +1,8 @@
 import React, { useEffect, useState } from "react";
 import InputBox from "../InputBox/InputBox";
-import { backendUrl } from "../../constants";
 import ServerStatus from "../ServerStatus/ServerStatus";
 
 const Homepage = () => {
-  const [serverStatus, setServerStatus] = useState(null);
-
   useEffect(() => {
     document.documentElement.style.overflow = "hidden";
     document.body.style.overflow = "hidden";
@@ -16,30 +13,18 @@ const Homepage = () => {
     };
   }, []);
 
-  useEffect(() => {
-    const checkServerStatus = async () => {
-      try {
-        console.log("Pinging Server");
-        setServerStatus("Checking Status...");
-        const response = await fetch(`${backendUrl}/test`);
-        if (response.ok) {
-          console.log("Ping Success");
-          setServerStatus("Online");
-        } else {
-          console.log("Ping Failed");
-          setServerStatus("Offline");
-        }
-      } catch (error) {
-        console.error("Error checking server status:", error);
-        setServerStatus("Offline");
-      }
-    };
-
-    checkServerStatus();
-  }, []);
-
   const styles = {
-    // Your styles remain unchanged
+    title: {
+      fontSize: "2.5rem",
+      marginBottom: "20px",
+      textAlign: "center",
+      width: "100%",
+    },
+    navTitle: {
+      padding: "0px 0px 0px 10px",
+      fontSize: "2rem",
+      margin: 0,
+    },
   };
 
   const Footer = () => {
@@ -94,7 +79,7 @@ const Homepage = () => {
         }}
       >
         <h1 style={styles.navTitle}>21YTMP3</h1>
-        <ServerStatus status={serverStatus} />
+        <ServerStatus />
       </div>
 
       <div

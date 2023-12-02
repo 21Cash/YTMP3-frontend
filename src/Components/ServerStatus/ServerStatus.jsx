@@ -1,9 +1,32 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { backendUrl } from "../../constants";
+const ServerStatus = () => {
+  const [serverStatus, setServerStatus] = useState(null);
+  useEffect(() => {
+    const checkServerStatus = async () => {
+      try {
+        console.log("Pinging Server");
+        setServerStatus("Checking Status...");
+        const response = await fetch(`${backendUrl}/test`);
+        if (response.ok) {
+          console.log("Ping Success");
+          setServerStatus("Online");
+        } else {
+          console.log("Ping Failed");
+          setServerStatus("Offline");
+        }
+      } catch (error) {
+        console.error("Error checking server status:", error);
+        setServerStatus("Offline");
+      }
+    };
 
-const ServerStatus = ({ status }) => {
+    checkServerStatus();
+  }, []);
+
   let statusColor = "#ff0000";
 
-  if (status === "Online") {
+  if (serverStatus === "Online") {
     statusColor = "#00ff00";
   }
 
@@ -18,7 +41,7 @@ const ServerStatus = ({ status }) => {
           marginRight: "5px",
         }}
       ></div>
-      <p>Server: {status}</p>
+      <p>Server: {serverStatus}</p>
     </div>
   );
 };
