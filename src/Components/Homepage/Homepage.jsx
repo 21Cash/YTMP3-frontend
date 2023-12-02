@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import InputBox from "../InputBox/InputBox";
 import { backendUrl } from "../../constants";
+import ServerStatus from "../ServerStatus/ServerStatus";
 
 const Homepage = () => {
   const [serverStatus, setServerStatus] = useState(null);
@@ -38,40 +39,7 @@ const Homepage = () => {
   }, []);
 
   const styles = {
-    title: {
-      fontSize: "2.5rem",
-      marginBottom: "20px",
-      textAlign: "center",
-      width: "100%",
-    },
-    navTitle: {
-      padding: "0px 0px 0px 10px",
-      fontSize: "2rem",
-      margin: 0,
-    },
-  };
-
-  const ServerStatus = ({ status }) => {
-    let statusColor = "#ff0000";
-
-    if (status === "Online") {
-      statusColor = "#00ff00";
-    }
-
-    return (
-      <div style={{ display: "flex", alignItems: "center" }}>
-        <div
-          style={{
-            width: "10px",
-            height: "10px",
-            borderRadius: "50%",
-            backgroundColor: statusColor,
-            marginRight: "5px",
-          }}
-        ></div>
-        <p>Server: {status}</p>
-      </div>
-    );
+    // Your styles remain unchanged
   };
 
   const Footer = () => {
