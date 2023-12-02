@@ -1,3 +1,3 @@
-const backendUrl = "https://ytmp3server.onrender.com";
+const backendUrl = "https://ytmp3-backend-1t2z.onrender.com";
 
 export { backendUrl };

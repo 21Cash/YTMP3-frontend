@@ -3,56 +3,52 @@ import { backendUrl } from "../../constants";
 
 const InputBox = () => {
   const [inputFieldData, setInputFieldData] = useState("");
-
   const handleDownloadClick = () => {
     const apiUrl = `${backendUrl}/convert?url=${inputFieldData}`;
 
-    // Create a link element
     const downloadLink = document.createElement("a");
     downloadLink.href = apiUrl;
-    downloadLink.download = "audio_file.mp3"; // You can specify the desired file name
+    downloadLink.download = "audio_file.mp3";
 
-    // Append the link to the body
     document.body.appendChild(downloadLink);
 
-    // Trigger a click event to simulate the download
     downloadLink.click();
 
-    // Remove the link from the body
     document.body.removeChild(downloadLink);
   };
-
   const styles = {
     container: {
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
-      justifyContent: "center", // Center items horizontally and vertically
+      justifyContent: "center",
       borderRadius: "8px",
-      backgroundColor: "#333", // Darker background color
+      backgroundColor: "#333",
       boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-      width: "500px", // Increase the width as needed
-      height: "200px", // Adjust the height as needed
+      width: "100%", // Set width to 100% for responsiveness
+      maxWidth: "500px", // Add maxWidth to limit the width on larger screens
+      boxSizing: "border-box",
+      padding: "20px", // Add padding for better spacing
     },
     label: {
       marginBottom: "10px",
       color: "#fff",
     },
     input: {
-      width: "100%", // Make the input field wider horizontally
-      padding: "8px",
+      width: "100%",
+      padding: "10px",
       borderRadius: "4px",
       border: "1px solid #555",
-      backgroundColor: "#555", // Darker input field background color
+      backgroundColor: "#555",
       color: "#fff",
     },
     button: {
-      marginTop: "10px", // Add some space between input and button
+      marginTop: "10px",
       padding: "8px 16px",
       borderRadius: "4px",
       border: "none",
       backgroundColor: "#61dafb",
-      color: "#fff",
+      color: "#black",
       cursor: "pointer",
     },
   };
