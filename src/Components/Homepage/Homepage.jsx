@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import InputBox from "../InputBox/InputBox";
 import ServerStatus from "../ServerStatus/ServerStatus";
+import { Link } from "react-router-dom";
 
 const Homepage = () => {
   useEffect(() => {
@@ -78,7 +79,10 @@ const Homepage = () => {
           justifyContent: "space-between",
         }}
       >
-        <h1 style={styles.navTitle}>21YTMP3</h1>
+        <Link to="/" style={{ textDecoration: "none", color: "#4a90e2" }}>
+          <h1 style={styles.navTitle}>21YTMP3</h1>
+        </Link>
+
         <ServerStatus />
       </div>
 
