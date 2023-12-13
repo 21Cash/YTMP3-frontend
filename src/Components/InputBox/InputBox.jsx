@@ -1,9 +1,13 @@
 import React, { useState } from "react";
 import { backendUrl } from "../../constants";
+import { json } from "react-router-dom";
 
 const InputBox = () => {
   const [inputFieldData, setInputFieldData] = useState("");
+  const [statusText, setStatusText] = useState("");
+
   const handleDownloadClick = async () => {
+    setStatusText("Fetching Video Urls From Playlist");
     try {
       const isPlaylistResponse = await fetch(
         `${backendUrl}/isPlaylistUrl?url=${inputFieldData}`
@@ -14,20 +18,27 @@ const InputBox = () => {
       if (!isPlaylist) {
         const apiUrl = `${backendUrl}/convert?url=${inputFieldData}`;
         const response = await fetch(apiUrl);
+        if (!response.ok) {
+          setStatusText(
+            `File Download Failed. Error Info : ${response.status}`
+          );
+          return;
+        }
         const blob = await response.blob();
         const contentDisposition = response.headers.get("Content-Disposition");
         const filename =
           extractFilename(contentDisposition) || "default_filename"; // Use a default name if filename not found
-        initiateDownload(URL.createObjectURL(blob), filename);
+
+        await initiateDownload(URL.createObjectURL(blob), filename);
       } else {
-        console.log("Detected that it's a Playlist URL.");
         const videoUrlsResponse = await fetch(
           `${backendUrl}/getUrls?playlistUrl=${inputFieldData}`
         );
         const videoUrlsData = await videoUrlsResponse.json();
         const videoUrls = videoUrlsData.urls;
 
-        // Process requests and start download for each one as soon as it's fetched
+        setStatusText("Fetching Video Urls From Playlist");
+
         const downloadPromises = videoUrls.map(async (url) => {
           const apiUrl = `${backendUrl}/convert?url=${url}`;
           const response = await fetch(apiUrl);
@@ -35,18 +46,18 @@ const InputBox = () => {
           const contentDisposition = response.headers.get(
             "Content-Disposition"
           );
-          console.log("Logging Disposition");
-          console.log(contentDisposition);
           const filename =
             extractFilename(contentDisposition) || "default_filename"; // Use a default name if filename not found
-          initiateDownload(URL.createObjectURL(blob), filename);
+
+          await initiateDownload(URL.createObjectURL(blob), filename);
         });
 
         await Promise.all(downloadPromises);
       }
     } catch (error) {
       console.error("Error:", error);
-      // Handle error scenario
+      setStatusText("Download Failed");
+      // Handle error scenario - Maybe clear ongoing downloads or take any specific actions
     }
   };
 
@@ -59,21 +70,35 @@ const InputBox = () => {
     }
     return null;
   };
-  const initiateDownload = (downloadUrl, filename) => {
-    const downloadLink = document.createElement("a");
-    downloadLink.href = downloadUrl;
-    downloadLink.setAttribute("download", filename);
 
-    document.body.appendChild(downloadLink);
+  const initiateDownload = async (downloadUrl, filename) => {
+    try {
+      const response = await fetch(downloadUrl);
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
 
-    downloadLink.click();
+      const blob = await response.blob();
 
-    document.body.removeChild(downloadLink);
-  };
+      // Check for error response before initiating download
+      if (downloadUrl.includes("Internal-Server-Error")) {
+        throw new Error("Download Failed");
+      }
 
-  const handleContainerClick = () => {
-    // Clear the input field when the container is clicked
-    setInputFieldData("");
+      const downloadLink = document.createElement("a");
+      downloadLink.href = URL.createObjectURL(blob);
+      downloadLink.setAttribute("download", filename);
+
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
+
+      setStatusText("Download started.");
+    } catch (error) {
+      console.error("Error:", error);
+      setStatusText("Download Failed");
+      // Handle error scenario, maybe clear ongoing downloads or take specific actions
+    }
   };
 
   const styles = {
@@ -111,10 +136,14 @@ const InputBox = () => {
       color: "#black",
       cursor: "pointer",
     },
+    statusText: {
+      marginTop: "10px",
+      color: "#fff",
+    },
   };
 
   return (
-    <div style={styles.container} onClick={handleContainerClick}>
+    <div style={styles.container}>
       <label style={styles.label}>
         Link:
         <input
@@ -127,6 +156,7 @@ const InputBox = () => {
       <button onClick={handleDownloadClick} style={styles.button}>
         Download
       </button>
+      <div style={styles.statusText}>{statusText}</div>
     </div>
   );
 };
