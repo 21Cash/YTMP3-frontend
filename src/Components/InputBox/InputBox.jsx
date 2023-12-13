@@ -16,6 +16,7 @@ const InputBox = () => {
       const isPlaylist = isPlaylistData.isPlaylist;
 
       if (!isPlaylist) {
+        
         const apiUrl = `${backendUrl}/convert?url=${inputFieldData}`;
         const response = await fetch(apiUrl);
         if (!response.ok) {
@@ -24,6 +25,7 @@ const InputBox = () => {
           );
           return;
         }
+        setStatusText("Starting Download...");
         const blob = await response.blob();
         const contentDisposition = response.headers.get("Content-Disposition");
         const filename =
