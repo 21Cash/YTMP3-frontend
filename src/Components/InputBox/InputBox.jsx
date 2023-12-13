@@ -7,8 +7,8 @@ const InputBox = () => {
   const [statusText, setStatusText] = useState("");
 
   const handleDownloadClick = async () => {
-    setStatusText("Fetching Video Urls From Playlist");
     try {
+      setStatusText("Starting Download...");
       const isPlaylistResponse = await fetch(
         `${backendUrl}/isPlaylistUrl?url=${inputFieldData}`
       );
@@ -16,7 +16,6 @@ const InputBox = () => {
       const isPlaylist = isPlaylistData.isPlaylist;
 
       if (!isPlaylist) {
-        
         const apiUrl = `${backendUrl}/convert?url=${inputFieldData}`;
         const response = await fetch(apiUrl);
         if (!response.ok) {
@@ -33,13 +32,18 @@ const InputBox = () => {
 
         await initiateDownload(URL.createObjectURL(blob), filename);
       } else {
+        setStatusText("Fetching Video Urls From Playlist");
         const videoUrlsResponse = await fetch(
           `${backendUrl}/getUrls?playlistUrl=${inputFieldData}`
         );
         const videoUrlsData = await videoUrlsResponse.json();
         const videoUrls = videoUrlsData.urls;
 
-        setStatusText("Fetching Video Urls From Playlist");
+        setStatusText("Urls Fetched.");
+        setTimeout(() => {
+          console.log("Timed Out");
+          setStatusText("Starting Download...");
+        }, 500);
 
         const downloadPromises = videoUrls.map(async (url) => {
           const apiUrl = `${backendUrl}/convert?url=${url}`;
@@ -75,6 +79,7 @@ const InputBox = () => {
 
   const initiateDownload = async (downloadUrl, filename) => {
     try {
+      setStatusText("Starting Download.... ");
       const response = await fetch(downloadUrl);
       if (!response.ok) {
         throw new Error("Network response was not ok");
