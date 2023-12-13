@@ -101,7 +101,7 @@ const Homepage = () => {
           marginTop: "60px",
         }}
       >
-        <h1 style={styles.title}>Download MP3</h1>
+        <h1 style={styles.title}>Download MP3 / Playlist</h1>
         <InputBox />
       </div>
 

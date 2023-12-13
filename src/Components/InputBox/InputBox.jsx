@@ -3,13 +3,66 @@ import { backendUrl } from "../../constants";
 
 const InputBox = () => {
   const [inputFieldData, setInputFieldData] = useState("");
+  const handleDownloadClick = async () => {
+    try {
+      const isPlaylistResponse = await fetch(
+        `${backendUrl}/isPlaylistUrl?url=${inputFieldData}`
+      );
+      const isPlaylistData = await isPlaylistResponse.json();
+      const isPlaylist = isPlaylistData.isPlaylist;
 
-  const handleDownloadClick = () => {
-    const apiUrl = `${backendUrl}/convert?url=${inputFieldData}`;
+      if (!isPlaylist) {
+        const apiUrl = `${backendUrl}/convert?url=${inputFieldData}`;
+        const response = await fetch(apiUrl);
+        const blob = await response.blob();
+        const contentDisposition = response.headers.get("Content-Disposition");
+        const filename =
+          extractFilename(contentDisposition) || "default_filename"; // Use a default name if filename not found
+        initiateDownload(URL.createObjectURL(blob), filename);
+      } else {
+        console.log("Detected that it's a Playlist URL.");
+        const videoUrlsResponse = await fetch(
+          `${backendUrl}/getUrls?playlistUrl=${inputFieldData}`
+        );
+        const videoUrlsData = await videoUrlsResponse.json();
+        const videoUrls = videoUrlsData.urls;
 
+        // Process requests and start download for each one as soon as it's fetched
+        const downloadPromises = videoUrls.map(async (url) => {
+          const apiUrl = `${backendUrl}/convert?url=${url}`;
+          const response = await fetch(apiUrl);
+          const blob = await response.blob();
+          const contentDisposition = response.headers.get(
+            "Content-Disposition"
+          );
+          console.log("Logging Disposition");
+          console.log(contentDisposition);
+          const filename =
+            extractFilename(contentDisposition) || "default_filename"; // Use a default name if filename not found
+          initiateDownload(URL.createObjectURL(blob), filename);
+        });
+
+        await Promise.all(downloadPromises);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      // Handle error scenario
+    }
+  };
+
+  const extractFilename = (contentDisposition) => {
+    if (contentDisposition && contentDisposition.indexOf("filename=") !== -1) {
+      const match = contentDisposition.match(/filename="(.+?)"/);
+      if (match && match[1]) {
+        return match[1];
+      }
+    }
+    return null;
+  };
+  const initiateDownload = (downloadUrl, filename) => {
     const downloadLink = document.createElement("a");
-    downloadLink.href = apiUrl;
-    downloadLink.download = "audio_file.mp3";
+    downloadLink.href = downloadUrl;
+    downloadLink.setAttribute("download", filename);
 
     document.body.appendChild(downloadLink);
 
