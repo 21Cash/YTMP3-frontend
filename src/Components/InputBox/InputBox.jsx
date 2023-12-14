@@ -5,6 +5,7 @@ import { json } from "react-router-dom";
 const InputBox = () => {
   const [inputFieldData, setInputFieldData] = useState("");
   const [statusText, setStatusText] = useState("");
+  const [downloadProgress, setDownloadProgress] = useState("");
 
   const handleDownloadClick = async () => {
     try {
@@ -39,31 +40,40 @@ const InputBox = () => {
         const videoUrlsData = await videoUrlsResponse.json();
         const videoUrls = videoUrlsData.urls;
 
-        setStatusText("Urls Fetched.");
-        setTimeout(() => {
-          console.log("Timed Out");
-          setStatusText("Starting Download...");
-        }, 500);
+        setStatusText("Downloading Playlist...");
+        setDownloadProgress(`0/${videoUrls.length}`);
 
-        const downloadPromises = videoUrls.map(async (url) => {
-          const apiUrl = `${backendUrl}/convert?url=${url}`;
-          const response = await fetch(apiUrl);
-          const blob = await response.blob();
-          const contentDisposition = response.headers.get(
-            "Content-Disposition"
-          );
-          const filename =
-            extractFilename(contentDisposition) || "default_filename"; // Use a default name if filename not found
+        let completedDownloads = 0;
 
-          await initiateDownload(URL.createObjectURL(blob), filename);
-        });
+        for (let i = 0; i < videoUrls.length; i++) {
+          const url = videoUrls[i];
+          try {
+            const apiUrl = `${backendUrl}/convert?url=${url}`;
+            const response = await fetch(apiUrl);
+            const blob = await response.blob();
+            const contentDisposition = response.headers.get(
+              "Content-Disposition"
+            );
+            const filename =
+              extractFilename(contentDisposition) || "default_filename";
 
-        await Promise.all(downloadPromises);
+            await initiateDownload(URL.createObjectURL(blob), filename);
+
+            completedDownloads++;
+            setDownloadProgress(`${completedDownloads}/${videoUrls.length}`);
+          } catch (error) {
+            console.error("Error:", error);
+            setStatusText("Download Failed");
+          }
+        }
+
+        setStatusText("All Downloads Completed");
+        setDownloadProgress("");
       }
     } catch (error) {
       console.error("Error:", error);
       setStatusText("Download Failed");
-      // Handle error scenario - Maybe clear ongoing downloads or take any specific actions
+      // Handle general download failure if required
     }
   };
 
@@ -87,7 +97,6 @@ const InputBox = () => {
 
       const blob = await response.blob();
 
-      // Check for error response before initiating download
       if (downloadUrl.includes("Internal-Server-Error")) {
         throw new Error("Download Failed");
       }
@@ -104,10 +113,8 @@ const InputBox = () => {
     } catch (error) {
       console.error("Error:", error);
       setStatusText("Download Failed");
-      // Handle error scenario, maybe clear ongoing downloads or take specific actions
     }
   };
-
   const styles = {
     container: {
       display: "flex",
@@ -117,10 +124,10 @@ const InputBox = () => {
       borderRadius: "8px",
       backgroundColor: "#333",
       boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-      width: "100%", // Set width to 100% for responsiveness
-      maxWidth: "500px", // Add maxWidth to limit the width on larger screens
+      width: "100%",
+      maxWidth: "500px",
       boxSizing: "border-box",
-      padding: "20px", // Add padding for better spacing
+      padding: "20px",
     },
     label: {
       marginBottom: "10px",
@@ -164,6 +171,9 @@ const InputBox = () => {
         Download
       </button>
       <div style={styles.statusText}>{statusText}</div>
+      {downloadProgress && (
+        <div style={styles.statusText}>Progress: {downloadProgress}</div>
+      )}
     </div>
   );
 };
