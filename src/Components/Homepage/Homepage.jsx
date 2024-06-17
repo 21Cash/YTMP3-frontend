@@ -46,7 +46,7 @@ const Homepage = () => {
         }}
       >
         <p>
-          © {currentYear} Sushil L, No Rights Reserved |{" "}
+          Made with ❤ By Sushil L{" "}
           <a
             href="https://github.com/21Cash/YTMP3-frontend"
             target="_blank"
